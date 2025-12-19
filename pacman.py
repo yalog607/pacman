@@ -30,7 +30,26 @@ flicker = False
 # R L U D
 turns_allowed = [False, False, False, False]
 direction_command = 0
+player_speed = 2
+score = 0
+powerup = False
+power_counter = 0
+eaten_ghost = [False, False, False, False]
 
+def check_collisions(scor, power, power_count, eaten_ghosts):
+    num1 = (HEIGHT - 50) // 32
+    num2 = WIDTH // 30
+    if 0 < player_x < 870:
+        if level[center_y // num1][center_x // num2] == 1:
+            level[center_y // num1][center_x // num2] = 0
+            scor += 10
+        if level[center_y // num1][center_x // num2] == 2:
+            level[center_y // num1][center_x // num2] = 0
+            scor += 50
+            power = True
+            power_count = 0
+            eaten_ghosts = [False, False, False, False]
+    return scor, power, power_count, eaten_ghosts
 
 def draw_board():
     num1 = (HEIGHT - 50) // 32
@@ -126,6 +145,18 @@ def check_position(centerx, centery):
 
     return turns
 
+def move_player(play_x, play_y):
+    # r, l, u, d
+    if direction == 0 and turns_allowed[0]:
+        play_x += player_speed
+    elif direction == 1 and turns_allowed[1]:
+        play_x -= player_speed
+    if direction == 2 and turns_allowed[2]:
+        play_y -= player_speed
+    elif direction == 3 and turns_allowed[3]:
+        play_y += player_speed
+    return play_x, play_y
+
 run = True
 while run:
     timer.tick(fps)
@@ -142,6 +173,8 @@ while run:
     center_x = player_x + 23
     center_y = player_y + 24
     turns_allowed = check_position(center_x, center_y)
+    player_x, player_y = move_player(player_x, player_y)
+    score, powerup, power_counter, eaten_ghost = check_collisions(score, powerup, power_counter, eaten_ghost)
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -165,6 +198,20 @@ while run:
                 direction_command = direction
             if event.key == pygame.K_DOWN and direction_command == 3:
                 direction_command = direction
+
+    if direction_command == 0 and turns_allowed[0]:
+        direction = 0
+    if direction_command == 1 and turns_allowed[1]:
+        direction = 1
+    if direction_command == 2 and turns_allowed[2]:
+        direction = 2
+    if direction_command == 3 and turns_allowed[3]:
+        direction = 3
+
+    if player_x > 900:
+        player_x = -47
+    elif player_x < -50:
+        player_x = 897
 
     pygame.display.flip()
 pygame.quit()
