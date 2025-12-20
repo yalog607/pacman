@@ -35,6 +35,9 @@ score = 0
 powerup = False
 power_counter = 0
 eaten_ghost = [False, False, False, False]
+lives = 3
+game_over = False
+game_won = False
 
 def check_collisions(scor, power, power_count, eaten_ghosts):
     num1 = (HEIGHT - 50) // 32
@@ -96,6 +99,24 @@ def draw_player():
         screen.blit(pygame.transform.rotate(player_images[counter // 5], 90), (player_x, player_y))
     elif direction == 3:
         screen.blit(pygame.transform.rotate(player_images[counter // 5], 270), (player_x, player_y))
+
+def draw_misc():
+    score_text = font.render(f'Score: {score}', True, 'white')
+    screen.blit(score_text, (10, 920))
+    if powerup:
+        pygame.draw.circle(screen, 'blue', (140, 930), 15)
+    for i in range(lives):
+        screen.blit(pygame.transform.scale(player_images[0], (30, 30)), (650 + i * 40, 915))
+    if game_over:
+        pygame.draw.rect(screen, 'white', [50, 200, 800, 300],0, 10)
+        pygame.draw.rect(screen, 'dark gray', [70, 220, 760, 260], 0, 10)
+        gameover_text = font.render('Game over! Space bar to restart!', True, 'red')
+        screen.blit(gameover_text, (100, 300))
+    if game_won:
+        pygame.draw.rect(screen, 'white', [50, 200, 800, 300],0, 10)
+        pygame.draw.rect(screen, 'dark gray', [70, 220, 760, 260], 0, 10)
+        gameover_text = font.render('Victory! Space bar to restart!', True, 'green')
+        screen.blit(gameover_text, (100, 300))
 
 def check_position(centerx, centery):
     turns = [False, False, False, False]
