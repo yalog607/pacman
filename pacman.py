@@ -1,26 +1,35 @@
 from board import boards
 import pygame
 import math
+import copy
 
 pygame.init()
 
 WIDTH, HEIGHT = 900, 950
-screen = pygame.display.set_mode((WIDTH, HEIGHT))
+screen = pygame.display.set_mode([WIDTH, HEIGHT])
 timer = pygame.time.Clock()
 fps = 60
 font = pygame.font.Font('freesansbold.ttf', 20)
-level = boards
+
+# Lấy bảng từ file board.py
+level = copy.deepcopy(boards)
 color = 'pink'
 PI = math.pi
 player_images = []
+
+# Lấy ảnh của người chơi
 for i in range(1, 5):
     player_images.append(pygame.transform.scale(pygame.image.load(f'assets/player_images/{i}.png'), (45, 45)))
+
+# Lấy ảnh của ma
 blinky_img = pygame.transform.scale(pygame.image.load(f'assets/ghost_images/red.png'), (45, 45))
 pinky_img = pygame.transform.scale(pygame.image.load(f'assets/ghost_images/pink.png'), (45, 45))
 inky_img = pygame.transform.scale(pygame.image.load(f'assets/ghost_images/blue.png'), (45, 45))
 clyde_img = pygame.transform.scale(pygame.image.load(f'assets/ghost_images/orange.png'), (45, 45))
 spooked_img = pygame.transform.scale(pygame.image.load(f'assets/ghost_images/powerup.png'), (45, 45))
 dead_img = pygame.transform.scale(pygame.image.load(f'assets/ghost_images/dead.png'), (45, 45))
+
+# Vị trí đầu tiên của người chơi và ma
 player_x = 450
 player_y = 663
 direction = 0
@@ -37,6 +46,8 @@ clyde_x = 420
 clyde_y = 390
 clyde_direction = 2
 counter = 0
+
+# Giúp tạo hiệu ứng nhấp nháy
 flicker = False
 # R L U D
 turns_allowed = [False, False, False, False]
@@ -47,6 +58,8 @@ powerup = False
 power_counter = 0
 eaten_ghost = [False, False, False, False]
 targets = [(player_x, player_y), (player_x, player_y), (player_x, player_y), (player_x, player_y)]
+
+# Nếu mấy con ma ở trong tù (cái hộp ở giữa) thì là True, ngược lại là False
 blinky_dead = False
 inky_dead = False
 clyde_dead = False
@@ -56,13 +69,17 @@ inky_box = False
 clyde_box = False
 pinky_box = False
 moving = False
+
+# Tốc độ của mấy con ma
 ghost_speeds = [2, 2, 2, 2]
 startup_counter = 0
+
+# Mạng sống
 lives = 3
 game_over = False
 game_won = False
 
-
+# Lớp cho con ma
 class Ghost:
     def __init__(self, x_coord, y_coord, target, speed, img, direct, dead, box, id):
         self.x_pos = x_coord
@@ -165,7 +182,7 @@ class Ghost:
 
     def move_clyde(self):
         # r, l, u, d
-        # clyde is going to turn whenever advantageous for pursuit
+        # clyde di chuyển linh hoạt, miễn sao có lợi để đuổi theo
         if self.direction == 0:
             if self.target[0] > self.x_pos and self.turns[0]:
                 self.x_pos += self.speed
@@ -304,7 +321,7 @@ class Ghost:
 
     def move_blinky(self):
         # r, l, u, d
-        # blinky is going to turn whenever colliding with walls, otherwise continue straight
+        # blinky sẽ đổi hướng khi gặp tường, còn lại sẽ đi thẳng
         if self.direction == 0:
             if self.target[0] > self.x_pos and self.turns[0]:
                 self.x_pos += self.speed
@@ -410,7 +427,7 @@ class Ghost:
 
     def move_inky(self):
         # r, l, u, d
-        # inky turns up or down at any point to pursue, but left and right only on collision
+        # inky trái phải khi gặp tường, lên xuống tùy theo có lợi để theo đuổi
         if self.direction == 0:
             if self.target[0] > self.x_pos and self.turns[0]:
                 self.x_pos += self.speed
@@ -532,7 +549,7 @@ class Ghost:
 
     def move_pinky(self):
         # r, l, u, d
-        # inky is going to turn left or right whenever advantageous, but only up or down on collision
+        # inky lên xuống khi gặp tường, trái phải khi có lợi để theo đuổi
         if self.direction == 0:
             if self.target[0] > self.x_pos and self.turns[0]:
                 self.x_pos += self.speed
@@ -890,7 +907,7 @@ while run:
         powerup = False
         eaten_ghost = [False, False, False, False]
 
-    if startup_counter < 180 and not game_over and not game_won:
+    if startup_counter < 100 and not game_over and not game_won:
         moving = False
         startup_counter += 1
     else:
