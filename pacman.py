@@ -316,7 +316,7 @@ class Ghost:
         if self.x_pos < -30:
             self.x_pos = 900
         elif self.x_pos > 900:
-            self.x_pos - 30
+            self.x_pos = -30
         return self.x_pos, self.y_pos, self.direction
 
     def move_blinky(self):
@@ -422,7 +422,7 @@ class Ghost:
         if self.x_pos < -30:
             self.x_pos = 900
         elif self.x_pos > 900:
-            self.x_pos - 30
+            self.x_pos = -30
         return self.x_pos, self.y_pos, self.direction
 
     def move_inky(self):
@@ -544,7 +544,7 @@ class Ghost:
         if self.x_pos < -30:
             self.x_pos = 900
         elif self.x_pos > 900:
-            self.x_pos - 30
+            self.x_pos = -30
         return self.x_pos, self.y_pos, self.direction
 
     def move_pinky(self):
@@ -669,7 +669,7 @@ class Ghost:
         if self.x_pos < -30:
             self.x_pos = 900
         elif self.x_pos > 900:
-            self.x_pos - 30
+            self.x_pos =  -30
         return self.x_pos, self.y_pos, self.direction
 
 def check_collisions(scor, power, power_count, eaten_ghosts):
@@ -972,6 +972,12 @@ while run:
             inky_x, inky_y, inky_direction = inky.move_clyde()
         clyde_x, clyde_y, clyde_direction = clyde.move_clyde()
     score, powerup, power_counter, eaten_ghost = check_collisions(score, powerup, power_counter, eaten_ghost)
+
+    for ghost in [blinky, inky, pinky, clyde]:
+        if ghost.x_pos > 900:
+            ghost.x_pos = -47
+        elif ghost.x_pos < -50:
+            ghost.x_pos = 897
 
     if not powerup:
         if (player_circle.colliderect(blinky.rect) and not blinky.dead) or \
